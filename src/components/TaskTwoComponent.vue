@@ -1,62 +1,79 @@
 <template>
-  <div class="pesel-validator">
+  <div class="task-completion">
     <h1>Walidacja numeru PESEL</h1>
-    <input type="text" v-model="pesel" placeholder="Wprowadź numer PESEL" />
-    <button @click="validatePesel">Sprawdź</button>
-    <p v-if="validationMessage" :class="{ error: !isValid, success: isValid }">
-      {{ validationMessage }}
-    </p>
+    <InputComponent
+      v-model="pesel"
+      label="Numer PESEL"
+      placeholder="Wprowadź numer PESEL"
+      :isValid="isValid"
+      :errorMessage="errorMessage"
+    />
+    <ButtonComponent
+      type="button"
+      text="Sprawdź"
+      radius
+      black-text
+      white
+      @click="validatePesel"
+    >
+    </ButtonComponent>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import InputComponent from "@/components/InputComponent.vue";
+import ButtonComponent from "@/components/ButtonComponent.vue";
 
 const pesel = ref("");
 const isValid = ref(null);
-const validationMessage = ref("");
+const errorMessage = ref("");
 
 // Funkcja walidująca PESEL
 function validatePesel() {
   if (pesel.value.length !== 11 || !/^\d+$/.test(pesel.value)) {
+    if (pesel.value.length === 0) {
+      isValid.value = null;
+      errorMessage.value = "";
+      return;
+    }
     isValid.value = false;
-    validationMessage.value = "Numer PESEL musi składać się z 11 cyfr.";
+    errorMessage.value = "Numer PESEL musi składać się z 11 cyfr.";
     return;
   }
 
-  const controlSum =
-    pesel.value
-      .split("")
-      .map(
-        (digit, index) =>
-          parseInt(digit) * [1, 3, 7, 9, 1, 3, 7, 9, 1, 3][index],
-      )
-      .reduce((acc, curr) => acc + curr, 0) % 10;
+  let weight = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+  let sum = 0;
+  let controlNumber = parseInt(pesel.value.substring(10, 11));
 
-  const lastDigit = parseInt(pesel.value[10]);
-
-  if ((10 - controlSum) % 10 === lastDigit) {
-    isValid.value = true;
-    validationMessage.value = "Numer PESEL jest poprawny.";
-  } else {
-    isValid.value = false;
-    validationMessage.value = "Numer PESEL jest niepoprawny.";
+  for (let i = 0; i < weight.length; i++) {
+    sum += parseInt(pesel.value.substring(i, i + 1)) * weight[i];
   }
+  sum = sum % 10;
+
+  isValid.value = (10 - sum) % 10 === controlNumber;
+  errorMessage.value = isValid.value
+    ? "Numer PESEL jest poprawny."
+    : "Numer PESEL jest niepoprawny.";
 }
 </script>
 
 <style scoped>
-.pesel-validator {
-  max-width: 400px;
+.task-completion {
+  display: flex;
+  flex-direction: column;
   margin: auto;
+  gap: 10px;
+  padding-top: 100px;
   text-align: center;
-}
+  align-items: center;
 
-.error {
-  color: red;
-}
+  .error {
+    color: red;
+  }
 
-.success {
-  color: green;
+  .success {
+    color: green;
+  }
 }
 </style>
