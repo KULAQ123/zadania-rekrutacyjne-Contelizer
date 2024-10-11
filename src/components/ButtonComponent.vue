@@ -71,13 +71,11 @@ defineProps({
     justify-content: center;
     align-items: center;
     display: flex;
-    //gap: var(--gap-xm);
 
     .text {
       font-weight: 500;
       font-size: 1rem;
       line-height: 1.3;
-      padding-left: var(--gap-xm);
     }
 
     &.black-text {
@@ -102,10 +100,6 @@ defineProps({
     display: flex;
     justify-content: center;
     align-items: center;
-
-    &:hover {
-      background: var(--color-white);
-    }
   }
 
   &.white {
