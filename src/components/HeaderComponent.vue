@@ -46,4 +46,19 @@ import ButtonComponent from "@/components/ButtonComponent.vue";
     padding-top: 20px;
   }
 }
+
+@media (max-width: 900px) {
+  .content {
+    flex-direction: column;
+    gap: unset;
+
+    .start-container {
+      justify-content: center;
+    }
+
+    .navbar-container {
+      flex-direction: column;
+    }
+  }
+}
 </style>

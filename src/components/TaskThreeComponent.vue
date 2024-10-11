@@ -7,10 +7,17 @@
       v-model="searchQuery"
       @input="filterUsers"
     />
-    <ul>
-      <li v-for="user in filteredUsers" :key="user.id">
+    <div class="list-container">
+      <div class="list-title">
+        <span>Imię i Nazwisko</span>
+        <span>Email</span>
+        <span>Akcja</span>
+      </div>
+      <hr class="divider" />
+      <div v-for="user in filteredUsers" :key="user.id" class="user">
         <div class="user-details">
-          <span>{{ user.name }} ({{ user.email }})</span>
+          <span>{{ user.name }}</span>
+          <span>({{ user.email }})</span>
           <ButtonComponent
             type="button"
             text="Edytuj"
@@ -20,7 +27,7 @@
             @click="editUser(user)"
           ></ButtonComponent>
         </div>
-        <div v-if="editingUser && editingUser.id === user.id">
+        <div v-if="editingUser && editingUser.id === user.id" class="user-edit">
           <InputComponent
             type="text"
             v-model="editingUser.name"
@@ -36,6 +43,7 @@
             :options="statusOptions"
             label="Wybierz opcję"
           />
+          <span v-if="errorMessage" class="error">{{ errorMessage }}</span>
           <div class="button-container">
             <ButtonComponent
               type="button"
@@ -55,8 +63,9 @@
             ></ButtonComponent>
           </div>
         </div>
-      </li>
-    </ul>
+        <hr class="divider" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -75,6 +84,7 @@ const statusOptions = ref([
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
 ]);
+const errorMessage = ref("");
 
 // Funkcja do pobieranie użytkowników
 async function fetchUsers() {
@@ -126,6 +136,30 @@ async function saveUser() {
     editingUser.value = null;
   } catch (error) {
     console.error("Błąd podczas zapisywania użytkownika:", error);
+
+    if (error.response && error.response.status === 422) {
+      const errors = error.response.data;
+
+      if (Array.isArray(errors) && errors.length) {
+        const emailError = errors.find(
+          (err) =>
+            err.field === "email" &&
+            err.message.includes("has already been taken"),
+        );
+
+        if (emailError) {
+          errorMessage.value = "Taki email już istnieje";
+        } else {
+          errorMessage.value = "Błąd walidacji danych. Sprawdź pola.";
+        }
+      } else {
+        // Ogólny błąd walidacyjny
+        errorMessage.value = "Błąd walidacji danych.";
+      }
+    } else {
+      // Inne błędy
+      errorMessage.value = "Wystąpił błąd podczas zapisywania użytkownika.";
+    }
   }
 }
 
@@ -138,35 +172,57 @@ onMounted(() => {
 .task-completion {
   display: flex;
   flex-direction: column;
-  width: 600px;
+  width: 700px;
   margin: auto;
   padding-bottom: 50px;
 
-  ul {
+  .list-container {
     display: flex;
     gap: 10px;
     flex-direction: column;
 
-    .button-container {
+    .list-title {
       display: flex;
-      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+
+      span {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 10px 0 10px 0;
+    }
+
+    .user {
+      .user-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .user-edit {
+        display: flex;
+        flex-direction: column;
+        max-width: 300px;
+        margin: auto;
+        transition: all 0.3s;
+
+        .error {
+          color: red;
+        }
+
+        .button-container {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+        }
+      }
     }
   }
-}
-input[type="text"],
-input[type="email"],
-select {
-  display: block;
-  margin: 5px 0;
-  padding: 8px;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.user-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 </style>
