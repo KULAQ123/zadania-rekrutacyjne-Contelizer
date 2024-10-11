@@ -29,6 +29,8 @@ npm run build
 
 ### Włączenie testów Cypress
 
+Przed uruchomieniem testów upewnij się, że projekt działa lokalnie. Następnie, w pliku cypress.config.js ustaw localhost uruchomionego projektu a w kolejnej karcie termianala uruchom testy cypress poniższą komendą.
+
 ```sh
-npm run build
+npx cypress open
 ```
