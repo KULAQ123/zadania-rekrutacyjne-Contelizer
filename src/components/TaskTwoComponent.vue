@@ -68,13 +68,5 @@ function validatePesel() {
   padding-top: 100px;
   text-align: center;
   align-items: center;
-
-  .error {
-    color: red;
-  }
-
-  .success {
-    color: green;
-  }
 }
 </style>

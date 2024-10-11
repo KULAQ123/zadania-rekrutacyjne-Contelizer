@@ -32,16 +32,18 @@
             type="text"
             v-model="editingUser.name"
             placeholder="Imię i nazwisko"
+            label="Imię i nazwisko"
           />
           <InputComponent
             type="email"
             v-model="editingUser.email"
             placeholder="E-mail"
+            label="E-mial"
           />
           <SelectComponent
             v-model="editingUser.status"
             :options="statusOptions"
-            label="Wybierz opcję"
+            label="Wybierz status"
           />
           <span v-if="errorMessage" class="error">{{ errorMessage }}</span>
           <div class="button-container">
@@ -81,8 +83,8 @@ const searchQuery = ref("");
 const filteredUsers = ref([]);
 const editingUser = ref(null);
 const statusOptions = ref([
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
+  { value: "active", label: "Aktywny" },
+  { value: "inactive", label: "Nieaktywny" },
 ]);
 const errorMessage = ref("");
 
@@ -111,6 +113,7 @@ function editUser(user) {
 // Funkcja do anulowanie edycji
 function cancelEdit() {
   editingUser.value = null;
+  errorMessage.value = "";
 }
 
 // Zapisz edytowanego użytkownika
@@ -134,6 +137,7 @@ async function saveUser() {
       filterUsers();
     }
     editingUser.value = null;
+    errorMessage.value = "";
   } catch (error) {
     console.error("Błąd podczas zapisywania użytkownika:", error);
 
