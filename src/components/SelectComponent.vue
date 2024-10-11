@@ -1,23 +1,22 @@
 <template>
-  <div class="custom-input">
+  <div class="custom-select">
     <label v-if="label">{{ label }}</label>
-    <input
-      :type="type"
-      :placeholder="placeholder"
+    <select
       :value="modelValue"
-      :accept="accept"
-      @input="$emit('update:modelValue', $event.target.value)"
-      :class="{
-        error: isValid === false,
-        success: isValid === true,
-      }"
-    />
+      @change="$emit('update:modelValue', $event.target.value)"
+      :class="{ error: isValid === false, success: isValid === true }"
+    >
+      <option
+        v-for="option in options"
+        :key="option.value"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </option>
+    </select>
     <p
       class="message"
-      :class="{
-        error: isValid === false,
-        success: isValid === true,
-      }"
+      :class="{ error: isValid === false, success: isValid === true }"
     >
       {{ errorMessage }}
     </p>
@@ -29,16 +28,13 @@ import { defineProps } from "vue";
 
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Number],
     required: true,
   },
-  type: {
-    type: String,
-    default: "text",
-  },
-  placeholder: {
-    type: String,
-    default: "Wprowadź wartość",
+  options: {
+    type: Array,
+    required: true,
+    default: () => [],
   },
   label: {
     type: String,
@@ -52,17 +48,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  accept: {
-    type: String,
-  },
 });
 </script>
 
 <style lang="scss" scoped>
-.custom-input {
+.custom-select {
   margin: 10px 0;
 
-  input {
+  select {
     padding: 10px;
     border: 2px solid #ccc;
     border-radius: 5px;
