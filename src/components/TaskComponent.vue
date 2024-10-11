@@ -8,7 +8,9 @@
     <div class="details">
       <h3>
         <div class="bold">Opis Zadania:</div>
-        <slot name="taskDescription"></slot>
+        <div class="description">
+          <slot name="taskDescription"></slot>
+        </div>
       </h3>
     </div>
     <slot></slot>
@@ -41,3 +43,4 @@
   }
 }
 </style>
+<script setup></script>

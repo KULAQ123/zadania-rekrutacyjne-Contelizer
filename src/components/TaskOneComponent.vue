@@ -1,7 +1,15 @@
 <template>
   <div class="task-completion">
     <form class="form-container" @submit.prevent="handleFileUpload">
-      <input type="file" @change="onFileChange" accept=".txt" />
+      <InputComponent
+        type="file"
+        label="Wybierz plik"
+        modelValue=""
+        accept=".txt"
+        :isValid="isValid"
+        :errorMessage="errorMessage"
+        @change="onFileChange"
+      />
       <ButtonComponent
         type="button"
         text="Prześlij plik"
@@ -10,7 +18,6 @@
         white
         @click="handleFileUpload"
       >
-        Prześlij plik
       </ButtonComponent>
     </form>
 
@@ -24,12 +31,17 @@
 <script setup>
 import { ref } from "vue";
 import ButtonComponent from "@/components/ButtonComponent.vue";
+import InputComponent from "@/components/InputComponent.vue";
 
 const file = ref(null);
 const textAfterSwitch = ref("");
+const errorMessage = ref("");
+const isValid = ref(null);
 
 function handleFileUpload() {
   if (file.value) {
+    isValid.value = true;
+    errorMessage.value = "Wybrano poprawny plik.";
     const reader = new FileReader();
     reader.onload = function () {
       const text = reader.result;
@@ -37,7 +49,8 @@ function handleFileUpload() {
     };
     reader.readAsText(file.value);
   } else {
-    alert("Proszę wybrać poprawny plik.");
+    isValid.value = false;
+    errorMessage.value = "Proszę wybrać poprawny plik.";
   }
 }
 
@@ -88,6 +101,8 @@ function onFileChange(event) {
   .form-container {
     display: flex;
     align-items: center;
+    flex-direction: column;
+    gap: 10px;
 
     input {
       cursor: pointer;
