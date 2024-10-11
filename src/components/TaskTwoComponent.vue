@@ -7,6 +7,7 @@
       placeholder="Wprowadź numer PESEL"
       :isValid="isValid"
       :errorMessage="errorMessage"
+      @keydown.enter="validatePesel"
     />
     <ButtonComponent
       type="button"
